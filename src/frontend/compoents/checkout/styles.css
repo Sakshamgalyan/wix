@@ -1,0 +1,37 @@
+.checkout-container {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .payment-methods {
+    margin: 20px 0;
+  }
+  
+  .payment-methods label {
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .error-message {
+    color: #ff4d4f;
+    margin: 10px 0;
+  }
+  
+  .pay-button {
+    width: 100%;
+    background: #3899ec;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .pay-button:disabled {
+    background: #ccc;
+  }
