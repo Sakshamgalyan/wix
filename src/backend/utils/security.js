@@ -1,7 +1,6 @@
-const crypto = require('crypto');
-// const { json } = require('stream/consumers');
+import crypto from 'crypto';
 
-function validateRequest (req, res , next) {
+export function validateRequest (req, res , next) {
     const apiKey = req.header('api-key');
 
     if (!apiKey || apiKey !== process.env.API_KEY) {
@@ -10,16 +9,16 @@ function validateRequest (req, res , next) {
     next();
 }
 
-function isValidsignature ( header, body, secret) {
+export function isValidsignature ( header, body, secret) {
     const signature = header['x-signature'];
-    const excepted = crypto.createHmac('sha256', secret).update(json.stringify(body)).digest('hex');
+    const expected = crypto.createHmac('sha256', secret).update(json.stringify(body)).digest('hex');
     
-    if (signature !== excepted) {
+    if (signature !== expected) {
         throw new Error('Invalid Signature');
     }
 }
 
-function validateWebhook (req){
+export function validateWebhook (req){
     const signature = req.header('x-signature');
     const hmac = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET)
         .update(JSON.stringify(req.body))
@@ -29,10 +28,3 @@ function validateWebhook (req){
     }
 
 }
-
-
-module.exports = {
-    validateRequest,
-    isValidsignature,
-    validateWebhook,
-};

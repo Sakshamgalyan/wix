@@ -1,10 +1,14 @@
-const { info } = require('console');
-const fs = require('fs');
-const path = require('path');
+import { info } from 'console';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const logFile = path.join(__dirname, '../../logs/app.log');
 
-function log(level, message) {
+export function logger(level, message) {
     if (!['info', 'error', 'warn'].includes(level)) {
         throw new Error('Invalid log level. Use "info", "error", or "warn".');
     }
@@ -13,10 +17,4 @@ function log(level, message) {
 
     fs.appendFileSync(logFile, logEntry);
     console[level](logEntry.trim());
-}
-
-module.exports = {
-    info: (message) => log('info', message),
-    error: (message) => log('error', message),
-    warn: (message) => log('warn', message),
 }
