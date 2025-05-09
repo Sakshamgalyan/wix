@@ -1,1 +1,0 @@
-WIX_ACCOUNT_ID
