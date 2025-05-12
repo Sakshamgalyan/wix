@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure logs directory exists
+// Configure log directory
 const logDir = path.join(__dirname, '../../logs');
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
@@ -14,20 +14,39 @@ if (!fs.existsSync(logDir)) {
 
 const logFile = path.join(logDir, 'app.log');
 
-// Main logger object
-const logger = {
-  info: (message) => writeLog('info', message),
-  error: (message) => writeLog('error', message),
-  warn: (message) => writeLog('warn', message)
+// Enhanced logger with request context support
+const createLogger = (reqContext = {}) => {
+  return {
+    info: (message, data) => writeLog('info', message, data, reqContext),
+    error: (message, data) => writeLog('error', message, data, reqContext),
+    warn: (message, data) => writeLog('warn', message, data, reqContext),
+    debug: (message, data) => writeLog('debug', message, data, reqContext),
+    // Change from withContext to child for compatibility
+    child: (newContext) => createLogger({ ...reqContext, ...newContext })
+  };
 };
 
-function writeLog(level, message) {
+function writeLog(level, message, data = {}, context = {}) {
   const timestamp = new Date().toISOString();
-  const logEntry = `[${timestamp}] ${level.toUpperCase()}: ${message}\n`;
+  const logEntry = {
+    timestamp,
+    level,
+    message,
+    ...context,
+    ...data
+  };
+
+  // Stringify for file output
+  const logString = JSON.stringify(logEntry) + '\n';
   
-  // Write to both console and file
-  console[level](logEntry.trim());
-  fs.appendFileSync(logFile, logEntry);
+  // Write to console (pretty-printed)
+  console[level](JSON.stringify(logEntry, null, 2));
+  
+  // Append to file
+  fs.appendFileSync(logFile, logString);
 }
+
+// Default logger instance
+const logger = createLogger();
 
 export default logger;
