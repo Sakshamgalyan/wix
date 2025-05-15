@@ -11,6 +11,7 @@
     "@wix/ecom": "^1.0.1145",
     "@wix/payments": "^1.0.78",
     "@wix/sdk": "^1.15.20",
+    "@wix/sdk-react": "^0.5.9",
     "@wix/wix-ui-icons-common": "^3.0.0",
     "axios": "^1.9.0",
     "body-parser": "^2.2.0",
@@ -26,18 +27,20 @@
   "devDependencies": {
     "@types/react": "^16.0.0",
     "@types/react-dom": "^16.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "@wix/cli": "^1.0.0",
     "@wix/cli-app": "^1.0.0",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
-    "typescript": "~5.8.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "~5.8.2",
+    "vite": "^5.1.4"
   },
   "scripts": {
     "wix": "wix",
     "build": "wix app build",
     "release": "wix app release",
-    "dev": "wix app dev",
-    "preview": "wix app preview",
+    "dev": "vite",
+    "preview": "vite preview",
     "generate": "wix app generate",
     "logs": "wix app logs",
     "typecheck": "tsc --noEmit"

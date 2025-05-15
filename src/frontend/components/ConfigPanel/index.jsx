@@ -2,27 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { useWix } from '@wix/sdk-react';
 import './styles.css';
 
-
 export default function ConfigPanel({ settings, setSettings }) {
   const { wix } = useWix();
   const [isLoading, setIsLoading] = useState(false);
-  const [settings, setSettings] = useState({});
   const [apiKey, setApiKey] = useState('');
 
   useEffect(() => {
-    wix.storage.getItem('apiKey').then(key => setSettings({ apiKey: key }));
+    // Initialize from props
+    if (settings?.apiKey) {
+      setApiKey(settings.apiKey);
+    } else {
+      // Fallback to storage if not in props
+      wix.storage.getItem('apiKey').then(key => {
+        if (key) {
+          setApiKey(key);
+          setSettings({ apiKey: key });
+        }
+      });
+    }
   }, []);
 
-  const saveSettings = () => {
-    wix.storage.setItem('apiKey', settings.apiKey);
+  const saveSettings = async () => {
+    await wix.storage.setItem('apiKey', apiKey);
   };
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await wix.saveSettings(settings); 
+      const newSettings = { apiKey };
+      await setSettings(newSettings); 
+      await saveSettings();
       wix.showToast('Settings saved successfully!');
-      saveSettings();
     } catch (error) {
       wix.showToast('Failed to save settings', { type: 'error' });
     } finally {
@@ -38,8 +48,8 @@ export default function ConfigPanel({ settings, setSettings }) {
         <label>API Key</label>
         <input
           type="password"
-          value={settings.apiKey}
-          onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
           placeholder="sk_live_..."
         />
       </div>

@@ -1,25 +1,17 @@
 import React from 'react';
-import { useWix } from '@wix/sdk-react';
-import ConfigPanel from './compoents/ConfigPanel';
-import Checkout from './compoents/checkout';
-
+import Checkout from './components/checkout';
 
 export default function App() {
-    const { wix, settings, setSettings } = useWix();
-
-    const isConfigMode = wix.context.mode === 'configure';
+    // Development mode data
+    const paymentData = {
+        paymentId: "test-payment-123",
+        amount: "99.99",
+        currency: "USD"
+    };
 
     return (
         <div className="app">
-            {isConfigMode ? (
-                <ConfigPanel settings={settings} setSettings={setSettings} />
-            ) : (
-                <Checkout 
-                    paymentId= {wix.context.paymentId} 
-                    amount= {wix.context.amount}
-                    currency= {wix.context.currency} 
-                    />
-            )}
+            <Checkout {...paymentData} />
         </div>
-    )
+    );
 }

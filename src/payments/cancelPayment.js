@@ -1,18 +1,28 @@
-import { cancelPayment } from 'url';
+import { gateway } from '../backend/gateway/connector.js';
+import { logger } from '../utils/logger.js';
 
 export async function post(req) {
-    const {orderId, amount, currency} = req.body;
+    const {paymentId} = req.body;
     
-    const payment = await cancelPayment({
-        orderId, 
-        amount,
-        currency
-    });
+    if (!paymentId) {
+        throw new Error('Payment ID is required');
+    }
+    
+    try {
+        const payment = await gateway.cancelPayment({
+            paymentId
+        });
+        
+        logger.info(`Payment cancelled for ${paymentId}`);
 
-    return {
-        body: {
-            paymentId: payment.id,
-            status: payment.status,
-        },
-    };
+        return {
+            body: {
+                paymentId: payment.paymentId,
+                status: payment.status
+            },
+        };
+    } catch (error) {
+        logger.error(`Cancel Payment Failed: ${error.message}`);
+        throw new Error('Failed to cancel payment');
+    }
 }

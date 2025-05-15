@@ -1,5 +1,4 @@
-import gateway from '../gateway/connector..js'
-import { createPayment } from 'paysecure_url';
+import { gateway } from '../backend/gateway/connector.js';
 import { logger } from '../utils/logger.js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -7,26 +6,26 @@ export async function post(req) {
     const {orderId, amount, currency} = req.body;
 
     if(!orderId || !amount || !currency || amount <= 0 || typeof amount !== 'number'){
-        throw new Error({ code: 'InValid_Input', status: 400 });
+        throw new Error('Invalid input parameters');
     }
 
-    const idempotencyKey = req.headers['x-idempotency-key'] || crypto.randomUUID();
+    const idempotencyKey = req.headers['x-idempotency-key'] || uuidv4();
 
     try {
         const payment = await gateway.createPayment({
             orderId,
             amount,
             currency,
-            callBackUrl: "paysecure_callbackUrl",
+            callBackUrl: process.env.PAYMENT_CALLBACK_URL,
             idempotencyKey
         });
 
-        logger.info(`Payment Created for ${orderId}: ${payment.id}`);
+        logger.info(`Payment Created for ${orderId}: ${payment.paymentId}`);
 
         return {
             body: {
-                paymentId: payment.id,
-                status: payment.redirect_url,
+                paymentId: payment.paymentId,
+                approvalUrl: payment.approvalUrl,
             },
         };
     } catch (error) {
@@ -34,5 +33,3 @@ export async function post(req) {
         throw new Error('Payment Initiation Failed');
     }
 }
-
-module.exports = { post };

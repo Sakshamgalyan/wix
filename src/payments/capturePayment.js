@@ -1,18 +1,29 @@
-import { capturePayment } from 'url';
+import { gateway } from '../backend/gateway/connector.js';
+import { logger } from '../utils/logger.js';
 
 export async function post(req) {
-    const {orderId, amount, currency} = req.body;
+    const {paymentId, amount} = req.body;
     
-    const payment = await capturePayment({
-        orderId, 
-        amount,
-        currency
-    });
+    if (!paymentId) {
+        throw new Error('Payment ID is required');
+    }
+    
+    try {
+        const payment = await gateway.capturePayment({
+            paymentId,
+            amount
+        });
+        
+        logger.info(`Payment captured for ${paymentId}`);
 
-    return {
-        body: {
-            paymentId: payment.id,
-            status: payment.status,
-        },
-    };
+        return {
+            body: {
+                paymentId: payment.paymentId,
+                status: payment.status
+            },
+        };
+    } catch (error) {
+        logger.error(`Capture Payment Failed: ${error.message}`);
+        throw new Error('Failed to capture payment');
+    }
 }

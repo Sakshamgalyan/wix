@@ -7,4 +7,4 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 
 // Development mode without Wix context
-root.render(<App />);
+root.render(<App />); 
